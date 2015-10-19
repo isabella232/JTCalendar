@@ -23,7 +23,8 @@
 
 - (void)setMenuPreviousDate:(NSDate *)previousDate
                 currentDate:(NSDate *)currentDate
-                   nextDate:(NSDate *)nextDate;
+                   nextDate:(NSDate *)nextDate
+                  reuseDate:(NSDate *)reuseDate;
 
 - (void)updateMenuContentOffset:(CGFloat)percentage pageMode:(NSUInteger)pageMode;
 - (void)updateHorizontalContentOffset:(CGFloat)percentage;

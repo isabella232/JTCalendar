@@ -12,12 +12,13 @@
 - (void)setMenuPreviousDate:(NSDate *)previousDate
                 currentDate:(NSDate *)currentDate
                    nextDate:(NSDate *)nextDate
+                  reuseDate:(NSDate *)reuseDate
 {
     if(!_menuView){
         return;
     }
     
-    [_menuView setPreviousDate:previousDate currentDate:currentDate nextDate:nextDate];
+    [_menuView setPreviousDate:previousDate currentDate:currentDate nextDate:nextDate reuseDate:reuseDate];
 }
 
 - (void)updateMenuContentOffset:(CGFloat)percentage pageMode:(NSUInteger)pageMode

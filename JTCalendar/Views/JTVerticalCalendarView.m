@@ -443,6 +443,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 {
     [_manager.scrollManager setMenuPreviousDate:_leftView.date
                                     currentDate:_centerView.date
-                                       nextDate:_rightView.date];
+                                       nextDate:_rightView.date
+                                      reuseDate:_rightView.date]; // because the vertical layout hasn't been updated to use the reuseView
 }
 @end

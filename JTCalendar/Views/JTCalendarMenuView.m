@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     UIView *_leftView;
     UIView *_centerView;
     UIView *_rightView;
+    UIView *_reuseView;
     
     JTCalendarPageMode _pageMode;
 }
@@ -104,6 +105,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
         _leftView.frame = CGRectMake(_leftView.frame.origin.x, 0, _scrollView.frame.size.width, size.height);
         _centerView.frame = CGRectMake(_centerView.frame.origin.x, 0, _scrollView.frame.size.width, size.height);
         _rightView.frame = CGRectMake(_rightView.frame.origin.x, 0, _scrollView.frame.size.width, size.height);
+        _reuseView.frame = CGRectMake(_reuseView.frame.origin.x, 0, _scrollView.frame.size.width, size.height);
     }
 }
 
@@ -114,7 +116,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     {
         CGFloat width = self.frame.size.width * _contentRatio;
-        CGFloat x = (self.frame.size.width - width) / 2.;
+        CGFloat x = (self.frame.size.width - width);
         CGFloat height = self.frame.size.height;
         
         _scrollView.frame = CGRectMake(x, 0, width, height);
@@ -130,7 +132,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             _leftView.frame = CGRectMake(0, 0, size.width, size.height);
             _centerView.frame = CGRectMake(size.width, 0, size.width, size.height);
             _rightView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
-            
+            _reuseView.frame = CGRectMake(size.width * 3, 0, size.width, size.height);
             _scrollView.contentOffset = CGPointMake(size.width, 0);
             break;
         case JTCalendarPageModeCenter:
@@ -139,7 +141,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             _leftView.frame = CGRectMake(- size.width, 0, size.width, size.height);
             _centerView.frame = CGRectMake(0, 0, size.width, size.height);
             _rightView.frame = CGRectMake(size.width, 0, size.width, size.height);
-            
+            _reuseView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
             _scrollView.contentOffset = CGPointZero;
             break;
         case JTCalendarPageModeCenterLeft:
@@ -148,6 +150,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             _leftView.frame = CGRectMake(0, 0, size.width, size.height);
             _centerView.frame = CGRectMake(size.width, 0, size.width, size.height);
             _rightView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
+            _reuseView.frame = CGRectMake(size.width * 3, 0, size.width, size.height);
             
             _scrollView.contentOffset = CGPointMake(size.width, 0);
             break;
@@ -157,6 +160,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             _leftView.frame = CGRectMake(- size.width, 0, size.width, size.height);
             _centerView.frame = CGRectMake(0, 0, size.width, size.height);
             _rightView.frame = CGRectMake(size.width, 0, size.width, size.height);
+            _reuseView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
             
             _scrollView.contentOffset = CGPointZero;
             break;
@@ -166,6 +170,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 - (void)setPreviousDate:(NSDate *)previousDate
             currentDate:(NSDate *)currentDate
                nextDate:(NSDate *)nextDate
+              reuseDate:(NSDate *)reuseDate
 {
     NSAssert(currentDate != nil, @"currentDate cannot be nil");
     NSAssert(_manager != nil, @"manager cannot be nil");
@@ -179,11 +184,15 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
         
         _rightView = [_manager.delegateManager buildMenuItemView];
         [_scrollView addSubview:_rightView];
+        
+        _reuseView = [_manager.delegateManager buildMenuItemView];
+        [_scrollView addSubview:_reuseView];
     }
     
     [_manager.delegateManager prepareMenuItemView:_leftView date:previousDate];
     [_manager.delegateManager prepareMenuItemView:_centerView date:currentDate];
     [_manager.delegateManager prepareMenuItemView:_rightView date:nextDate];
+    [_manager.delegateManager prepareMenuItemView:_reuseView date:reuseDate];
     
     BOOL haveLeftPage = [_manager.delegateManager canDisplayPageWithDate:previousDate];
     BOOL haveRightPage = [_manager.delegateManager canDisplayPageWithDate:nextDate];

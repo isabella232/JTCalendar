@@ -15,7 +15,8 @@
 
 - (void)setPreviousDate:(NSDate *)previousDate
             currentDate:(NSDate *)currentDate
-               nextDate:(NSDate *)nextDate;
+               nextDate:(NSDate *)nextDate
+              reuseDate:(NSDate *)reuseDate;
 
 - (void)updatePageMode:(NSUInteger)pageMode;
 
