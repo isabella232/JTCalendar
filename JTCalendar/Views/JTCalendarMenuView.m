@@ -136,7 +136,8 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             _scrollView.contentOffset = CGPointMake(size.width, 0);
             break;
         case JTCalendarPageModeCenter:
-            _scrollView.contentSize = size;
+            // Add 1 point so that it still bounces
+            _scrollView.contentSize = CGSizeMake(size.width + 1, size.height);
             
             _leftView.frame = CGRectMake(- size.width, 0, size.width, size.height);
             _centerView.frame = CGRectMake(0, 0, size.width, size.height);
