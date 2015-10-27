@@ -60,6 +60,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
     self.pagingEnabled = YES;
+    self.alwaysBounceHorizontal = YES;
     self.clipsToBounds = YES;
 }
 
@@ -407,8 +408,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             self.contentOffset = CGPointMake(size.width, 0);
             break;
         case JTCalendarPageModeCenter:
-            // Add 1 point so that it still bounces
-            self.contentSize = CGSizeMake(size.width + 1, size.height);
+            self.contentSize = size;
             
             _leftView.frame = CGRectMake(- size.width, 0, size.width, size.height);
             _centerView.frame = CGRectMake(0, 0, size.width, size.height);
