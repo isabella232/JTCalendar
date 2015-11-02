@@ -26,6 +26,12 @@
                    nextDate:(NSDate *)nextDate
                   reuseDate:(NSDate *)reuseDate;
 
+- (void)setMenuPreviousDate:(NSDate *)previousDate
+                currentDate:(NSDate *)currentDate
+     currentSecondMonthDate:(NSDate *)currentSecondMonthDate
+                   nextDate:(NSDate *)nextDate
+                  reuseDate:(NSDate *)reuseDate;
+
 - (void)updateMenuContentOffset:(CGFloat)percentage pageMode:(NSUInteger)pageMode;
 - (void)updateHorizontalContentOffset:(CGFloat)percentage;
 

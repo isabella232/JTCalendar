@@ -106,8 +106,8 @@
         return;
     }
     
-    CGFloat x = 0;
-    CGFloat dayWidth = self.frame.size.width / NUMBER_OF_DAY_BY_WEEK;
+    CGFloat x = self.manager.settings.margins;
+    CGFloat dayWidth = (self.frame.size.width - (2 * self.manager.settings.margins)) / NUMBER_OF_DAY_BY_WEEK; //2 * margins for margins on both sides
     CGFloat dayHeight = self.frame.size.height;
     
     for(UIView *dayView in _daysViews){

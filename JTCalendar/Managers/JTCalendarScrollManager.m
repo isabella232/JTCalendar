@@ -21,6 +21,19 @@
     [_menuView setPreviousDate:previousDate currentDate:currentDate nextDate:nextDate reuseDate:reuseDate];
 }
 
+- (void)setMenuPreviousDate:(NSDate *)previousDate
+                currentDate:(NSDate *)currentDate
+     currentSecondMonthDate:(NSDate *)currentSecondMonthDate
+                   nextDate:(NSDate *)nextDate
+                  reuseDate:(NSDate *)reuseDate
+{
+    if(!_menuView){
+        return;
+    }
+    
+    [_menuView setPreviousDate:previousDate currentDate:currentDate currentSecondMonthDate:currentSecondMonthDate nextDate:nextDate reuseDate:reuseDate];
+}
+
 - (void)updateMenuContentOffset:(CGFloat)percentage pageMode:(NSUInteger)pageMode
 {
     if(!_menuView){

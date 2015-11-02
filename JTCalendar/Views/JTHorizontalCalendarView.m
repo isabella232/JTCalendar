@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     UIView<JTCalendarPage> *_leftView;
     UIView<JTCalendarPage> *_centerView;
+    UIView<JTCalendarPage> *_centerSecondMonthView; //for use with two month view
     UIView<JTCalendarPage> *_rightView;
     UIView<JTCalendarPage> *_reuseView;
     
@@ -72,7 +73,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 
 - (void)resizeViewsIfWidthChanged
 {
-    CGSize size = self.frame.size;
+    CGSize size = [self calendarPageSize];
     if(size.width != _lastSize.width){
         _lastSize = size;
         
@@ -86,6 +87,10 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
         _rightView.frame = CGRectMake(_rightView.frame.origin.x, 0, size.width, size.height);
         _reuseView.frame = CGRectMake(_rightView.frame.origin.x, 0, size.width, size.height);
         
+        if (self.manager.showSecondMonth) {
+            _centerSecondMonthView.frame = CGRectMake(_centerSecondMonthView.frame.origin.x, 0, size.width, size.height);
+        }
+        
         self.contentSize = CGSizeMake(self.contentSize.width, size.height);
     }
 }
@@ -96,7 +101,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
         return;
     }
 
-    CGSize size = self.frame.size;
+    CGSize size = [self calendarPageSize];
     
     switch (_pageMode) {
         case JTCalendarPageModeFull:
@@ -141,7 +146,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             break;
     }
     
-    CGSize size = self.frame.size;
+    CGSize size = [self calendarPageSize];
     CGPoint point = CGPointMake(self.contentOffset.x - size.width, 0);
     [self setContentOffset:point animated:YES];
 }
@@ -156,9 +161,19 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             break;
     }
     
-    CGSize size = self.frame.size;
+    CGSize size = [self calendarPageSize];
     CGPoint point = CGPointMake(self.contentOffset.x + size.width, 0);
     [self setContentOffset:point animated:YES];
+}
+
+- (CGSize)calendarPageSize {
+    CGSize size = self.frame.size;
+    
+    if (self.manager.showSecondMonth) {
+        size.width /= 2;
+    }
+    
+    return size;
 }
 
 // should *just* be moving and updating the reuseView
@@ -170,7 +185,14 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     // cycle all the views
     UIView<JTCalendarPage> *tmpView = _rightView; // right view is disappearing
-    _rightView = _centerView;
+    
+    if (self.manager.showSecondMonth) {
+        _rightView = _centerSecondMonthView;
+        _centerSecondMonthView = _centerView;
+    } else {
+        _rightView = _centerView;
+    }
+    
     _centerView = _leftView;
     _leftView = _reuseView; // will be the *next* left view
     _reuseView = tmpView;
@@ -183,45 +205,54 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     [self updatePageMode];
     
-    CGSize size = self.frame.size;
+    CGSize size = [self calendarPageSize];
     
     switch (_pageMode) {
-        case JTCalendarPageModeFull:
+        case JTCalendarPageModeFull: {
+            NSInteger viewCount = 0;
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 4 : 3;
             
             if(previousPageMode == JTCalendarPageModeFull || previousPageMode ==  JTCalendarPageModeCenterLeft){
-                _leftView.frame = CGRectMake(0, 0, size.width, size.height);
-                _centerView.frame = CGRectMake(size.width, 0, size.width, size.height);
-                _rightView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
-                _reuseView.frame = CGRectMake(size.width * 3, 0, size.width, size.height);
+                _leftView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+                _centerView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+                if (self.manager.showSecondMonth) {
+                    _centerSecondMonthView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+                }
+                _rightView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+                _reuseView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
                 self.contentOffset = CGPointMake(size.width, 0);
             }
             
-            self.contentSize = CGSizeMake(size.width * 3, size.height);
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
             
             break;
+        }
         case JTCalendarPageModeCenter:
             // Not tested
-            
             _leftView.frame = CGRectMake(- size.width, 0, size.width, size.height);
             
             self.contentSize = size;
             
             break;
-        case JTCalendarPageModeCenterLeft:
+        case JTCalendarPageModeCenterLeft: {
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 3 : 2;
             
             _leftView.frame = CGRectMake(0, 0, size.width, size.height);
             
             self.contentOffset = CGPointMake(self.contentOffset.x + size.width, 0);
-            self.contentSize = CGSizeMake(size.width * 2, size.height);
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
             
             break;
-        case JTCalendarPageModeCenterRight:
+        }
+        case JTCalendarPageModeCenterRight: {
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 3 : 2;
             
             _leftView.frame = CGRectMake(- size.width, 0, size.width, size.height);
             
-            self.contentSize = CGSizeMake(size.width * 2, size.height);
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
             
             break;
+        }
     }
     
     // Update the dayView that wasn't already correct
@@ -242,7 +273,14 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     // cycle all the views
     UIView<JTCalendarPage> *tmpView = _leftView; // left view is disappearing
     _leftView = _centerView;
-    _centerView = _rightView;
+    
+    if (self.manager.showSecondMonth) {
+        _centerView = _centerSecondMonthView;
+        _centerSecondMonthView = _rightView;
+    } else {
+        _centerView = _rightView;
+    }
+    
     _rightView = _reuseView; // will be the *next* right view
     _reuseView = tmpView;
     
@@ -254,35 +292,45 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     [self updatePageMode];
     
-    CGSize size = self.frame.size;
+    CGSize size = [self calendarPageSize];
     
     switch (_pageMode) {
-        case JTCalendarPageModeFull:
+        case JTCalendarPageModeFull: {
+            NSInteger viewCount = 0;
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 4 : 3;
             
             if(previousPageMode == JTCalendarPageModeFull){
-                _leftView.frame = CGRectMake(0, 0, size.width, size.height);
-                _centerView.frame = CGRectMake(size.width, 0, size.width, size.height);
-                _rightView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
-
-                self.contentOffset = CGPointMake(size.width, 0);
+                _leftView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+                _centerView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+                if (self.manager.showSecondMonth) {
+                    _centerSecondMonthView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+                }
+                _rightView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+                _reuseView.frame = CGRectMake(size.width * numberOfPages, 0, size.width, size.height);
                 
+                self.contentOffset = CGPointMake(size.width, 0);
             }
-            _reuseView.frame = CGRectMake(size.width * 3, 0, size.width, size.height);
-            self.contentSize = CGSizeMake(size.width * 3, size.height);
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
             
             break;
-        case JTCalendarPageModeCenter:
+        }
+        case JTCalendarPageModeCenter: {
             // Not tested
-            
-            _reuseView.frame = CGRectMake(size.width * 3, 0, size.width, size.height);
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 4 : 3;
+            _reuseView.frame = CGRectMake(size.width * numberOfPages, 0, size.width, size.height);
             self.contentSize = size;
             
             break;
-        case JTCalendarPageModeCenterLeft:
+        }
+        case JTCalendarPageModeCenterLeft: {
+            NSInteger viewCount = 0;
             
-            _leftView.frame = CGRectMake(0, 0, size.width, size.height);
-            _centerView.frame = CGRectMake(size.width, 0, size.width, size.height);
-            _rightView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
+            _leftView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+            _centerView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+            if (self.manager.showSecondMonth) {
+                _centerSecondMonthView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+            }
+            _rightView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
 
              _reuseView.frame = CGRectMake(-size.width, 0, size.width, size.height);
             if(previousPageMode != JTCalendarPageModeCenterLeft){
@@ -290,17 +338,19 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             }
 
             // Must be set a the end else the scroll freeze
-            self.contentSize = CGSizeMake(size.width * 2, size.height);
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 3 : 2;
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
 
             break;
-        case JTCalendarPageModeCenterRight:
+        }
+        case JTCalendarPageModeCenterRight: {
             // Not tested
-            
-            _reuseView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
-
-            self.contentSize = CGSizeMake(size.width * 2, size.height);
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 3 : 2;
+            _reuseView.frame = CGRectMake(size.width * numberOfPages, 0, size.width, size.height);
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
             
             break;
+        }
     }
     
     // Update the dayView that wasn't already correct
@@ -325,6 +375,11 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
         _centerView = [_manager.delegateManager buildPageView];
         [self addSubview:_centerView];
         
+        if (self.manager.showSecondMonth) {
+            _centerSecondMonthView = [_manager.delegateManager buildPageView];
+            [self addSubview:_centerSecondMonthView];
+        }
+        
         _rightView = [_manager.delegateManager buildPageView];
         [self addSubview:_rightView];
         
@@ -336,7 +391,12 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     _leftView.date = [_manager.delegateManager dateForPreviousPageWithCurrentDate:date];
     _centerView.date = date;
-    _rightView.date = [_manager.delegateManager dateForNextPageWithCurrentDate:date];
+    if (self.manager.showSecondMonth) {
+        _centerSecondMonthView.date = [_manager.delegateManager dateForNextPageWithCurrentDate:date];
+        _rightView.date = [_manager.delegateManager dateForNextPageWithCurrentDate:_centerSecondMonthView.date];
+    } else {
+        _rightView.date = [_manager.delegateManager dateForNextPageWithCurrentDate:date];
+    }
     _reuseView.date = [_manager.delegateManager dateForNextPageWithCurrentDate:_rightView.date]; // assumes will generally scroll to the right view first
     
     [self updateMenuDates];
@@ -361,6 +421,10 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     _centerView.manager = _manager;
     _rightView.manager = _manager;
     _reuseView.manager = _manager;
+    
+    if (self.manager.showSecondMonth) {
+        _centerSecondMonthView.manager = _manager;
+    }
 }
 
 - (void)updatePageMode
@@ -393,59 +457,63 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 
 - (void)repositionViews
 {
-    CGSize size = self.frame.size;
+    CGSize size = [self calendarPageSize];
     self.contentInset = UIEdgeInsetsZero;
     
     switch (_pageMode) {
-        case JTCalendarPageModeFull:
-            self.contentSize = CGSizeMake(size.width * 3, size.height);
-            
-            _leftView.frame = CGRectMake(0, 0, size.width, size.height);
-            _centerView.frame = CGRectMake(size.width, 0, size.width, size.height);
-            _rightView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
-            _reuseView.frame = CGRectMake(size.width * 3, 0, size.width, size.height);
-            
-            self.contentOffset = CGPointMake(size.width, 0);
+        case JTCalendarPageModeFull: {
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 4 : 3;
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
+            [self updateCalendarPageFrameForStartIndex:0];
             break;
-        case JTCalendarPageModeCenter:
+        }
+        case JTCalendarPageModeCenter: {
             self.contentSize = size;
-            
-            _leftView.frame = CGRectMake(- size.width, 0, size.width, size.height);
-            _centerView.frame = CGRectMake(0, 0, size.width, size.height);
-            _rightView.frame = CGRectMake(size.width, 0, size.width, size.height);
-            _reuseView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
-
-            self.contentOffset = CGPointZero;
+            [self updateCalendarPageFrameForStartIndex:-1];
             break;
-        case JTCalendarPageModeCenterLeft:
-            self.contentSize = CGSizeMake(size.width * 2, size.height);
-            
-            _leftView.frame = CGRectMake(0, 0, size.width, size.height);
-            _centerView.frame = CGRectMake(size.width, 0, size.width, size.height);
-            _rightView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
-            _reuseView.frame = CGRectMake(- size.width, 0, size.width, size.height);
-
-            self.contentOffset = CGPointMake(size.width, 0);
+        }
+        case JTCalendarPageModeCenterLeft: {
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 3 : 2;
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
+            [self updateCalendarPageFrameForStartIndex:0];
             break;
-        case JTCalendarPageModeCenterRight:
-            self.contentSize = CGSizeMake(size.width * 2, size.height);
-            
-            _leftView.frame = CGRectMake(- size.width, 0, size.width, size.height);
-            _centerView.frame = CGRectMake(0, 0, size.width, size.height);
-            _rightView.frame = CGRectMake(size.width, 0, size.width, size.height);
-            _reuseView.frame = CGRectMake(size.width * 2, 0, size.width, size.height);
-            
-            self.contentOffset = CGPointZero;
+        }
+        case JTCalendarPageModeCenterRight: {
+            NSInteger numberOfPages = self.manager.showSecondMonth ? 3 : 2;
+            self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
+            [self updateCalendarPageFrameForStartIndex:-1];
             break;
+        }
     }
+}
+
+- (void)updateCalendarPageFrameForStartIndex:(NSInteger)startIndex {
+    CGSize size = [self calendarPageSize];
+    NSInteger viewCount = startIndex;
+    _leftView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+    _centerView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+    if (self.manager.showSecondMonth) {
+        _centerSecondMonthView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+    }
+    _rightView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+    _reuseView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+    self.contentOffset = CGPointMake((1 + startIndex) * size.width, 0);
 }
 
 - (void)updateMenuDates
 {
-    [_manager.scrollManager setMenuPreviousDate:_leftView.date
-                                    currentDate:_centerView.date
-                                       nextDate:_rightView.date
-                                      reuseDate:_reuseView.date];
+    if (self.manager.showSecondMonth) {
+        [_manager.scrollManager setMenuPreviousDate:_leftView.date
+                                        currentDate:_centerView.date
+                             currentSecondMonthDate:_centerSecondMonthView.date
+                                           nextDate:_rightView.date
+                                          reuseDate:_reuseView.date];
+    } else {
+        [_manager.scrollManager setMenuPreviousDate:_leftView.date
+                                        currentDate:_centerView.date
+                                           nextDate:_rightView.date
+                                          reuseDate:_reuseView.date];
+    }
 }
 
 @end

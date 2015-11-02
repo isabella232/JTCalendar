@@ -25,6 +25,8 @@
 
 - (void)commonInit
 {
+    self.showSecondMonth = NO;
+    
     _dateHelper = [JTDateHelper new];
     _settings = [JTCalendarSettings new];
     

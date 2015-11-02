@@ -18,6 +18,12 @@
                nextDate:(NSDate *)nextDate
               reuseDate:(NSDate *)reuseDate;
 
+- (void)setPreviousDate:(NSDate *)previousDate
+            currentDate:(NSDate *)currentDate
+       currentSecondMonthDate:(NSDate *)currentSecondMonthDate
+               nextDate:(NSDate *)nextDate
+              reuseDate:(NSDate *)reuseDate;
+
 - (void)updatePageMode:(NSUInteger)pageMode;
 
 - (UIScrollView *)scrollView;

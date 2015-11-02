@@ -24,6 +24,7 @@
 
 @property (nonatomic, weak) UIView<JTMenu> *menuView;
 @property (nonatomic, weak) UIScrollView<JTContent> *contentView;
+@property (nonatomic, assign) BOOL showSecondMonth;
 
 @property (nonatomic, readonly) JTDateHelper *dateHelper;
 @property (nonatomic, readonly) JTCalendarSettings *settings;
