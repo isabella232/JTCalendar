@@ -70,19 +70,19 @@
     NSDate *firstDay = [self firstDayOfMonth:date];
     NSDate *lastDay = [self lastDayOfMonth:date];
     
-    NSDateComponents *componentsA = [self.calendar components:NSCalendarUnitWeekOfYear fromDate:firstDay];
-    NSDateComponents *componentsB = [self.calendar components:NSCalendarUnitWeekOfYear fromDate:lastDay];
+    NSDateComponents *firstDayComponents = [self.calendar components:NSCalendarUnitWeekOfYear fromDate:firstDay];
+    NSDateComponents *lastDayComponents = [self.calendar components:NSCalendarUnitWeekOfYear fromDate:lastDay];
     
     // weekOfYear may return 53 for the first week of the year
     // hack
-    if(componentsB.weekOfYear == 53){
-        componentsB.weekOfYear = 0;
+    if(lastDayComponents.weekOfYear == 53){
+        lastDayComponents.weekOfYear = 0;
     }
-    if(componentsA.weekOfYear == 53){
-        componentsA.weekOfYear = 0;
+    if(firstDayComponents.weekOfYear == 53){
+        firstDayComponents.weekOfYear = 0;
     }
     
-    return (componentsB.weekOfYear - componentsA.weekOfYear + 52 + 1) % 52;
+    return (NSUInteger)(lastDayComponents.weekOfYear - firstDayComponents.weekOfYear + 52 + 1) % 52;
 }
 
 - (NSDate *)firstDayOfMonth:(NSDate *)date
