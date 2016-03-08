@@ -535,26 +535,27 @@
 - (void)setContentOffsetForCalendarPaging {
     CGSize pageSize = [self calendarPageSize];
     NSInteger pageChange = 0;
+    CGFloat pageSwitchThreshold = 0.1;
     
     switch (self.pageMode) {
         case JTCalendarPageModeCenterRight:
-            if (self.contentOffset.x > pageSize.width * 0.5) {
+            if (self.contentOffset.x > pageSize.width * pageSwitchThreshold) {
                 pageChange = 1;
-            } else if (self.contentOffset.x < -pageSize.width * 0.5) {
-                pageChange = -1;
+            } else if (self.contentOffset.x < -pageSize.width * pageSwitchThreshold) {
+                pageChange = 0;
             }
             break;
         case JTCalendarPageModeFull:
-            if (self.contentOffset.x > pageSize.width * 1.5) {
+            if (self.contentOffset.x > pageSize.width * (1 + pageSwitchThreshold)) {
                 pageChange = 2;
-            } else if (self.contentOffset.x < pageSize.width * 0.5) {
+            } else if (self.contentOffset.x < pageSize.width * (1 - pageSwitchThreshold)) {
                 pageChange = 0;
             } else {
                 pageChange = 1;
             }
             break;
         case JTCalendarPageModeCenterLeft:
-            if (self.contentOffset.x < pageSize.width * 0.5) {
+            if (self.contentOffset.x < pageSize.width *  (1 - pageSwitchThreshold)) {
                 pageChange = 0;
             } else {
                 pageChange = 1;
