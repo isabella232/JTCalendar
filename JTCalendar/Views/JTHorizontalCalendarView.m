@@ -9,13 +9,6 @@
 
 #import "JTCalendarManager.h"
 
-typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
-    JTCalendarPageModeFull,
-    JTCalendarPageModeCenter,
-    JTCalendarPageModeCenterLeft,
-    JTCalendarPageModeCenterRight
-};
-
 @interface JTHorizontalCalendarView (){
     CGSize _lastSize;
     
@@ -24,8 +17,6 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     UIView<JTCalendarPage> *_centerSecondMonthView; //for use with two month view
     UIView<JTCalendarPage> *_rightView;
     UIView<JTCalendarPage> *_reuseView;
-    
-    JTCalendarPageMode _pageMode;
 }
 
 @end
@@ -60,9 +51,9 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 {
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
-    self.pagingEnabled = YES;
     self.alwaysBounceHorizontal = YES;
     self.clipsToBounds = YES;
+    self.delegate = self;
 }
 
 - (void)layoutSubviews
@@ -103,7 +94,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 
     CGSize size = [self calendarPageSize];
     
-    switch (_pageMode) {
+    switch (self.pageMode) {
         case JTCalendarPageModeFull:
             
             if(self.contentOffset.x <= 0){
@@ -133,12 +124,18 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
             break;
     }
     
-    [_manager.scrollManager updateMenuContentOffset:(self.contentOffset.x / self.contentSize.width) pageMode:_pageMode];
+    [_manager.scrollManager updateMenuContentOffset:(self.contentOffset.x / self.contentSize.width) pageMode:self.pageMode];
+}
+
+- (BOOL)fullPageIsShowing {
+    CGSize size = [self calendarPageSize];
+    CGFloat proportionScrolled = fmod(self.contentOffset.x, size.width) / size.width;
+    return proportionScrolled == 0;
 }
 
 - (void)loadPreviousPageWithAnimation
 {
-    switch (_pageMode) {
+    switch (self.pageMode) {
         case JTCalendarPageModeCenterRight:
         case JTCalendarPageModeCenter:
             return;
@@ -153,7 +150,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 
 - (void)loadNextPageWithAnimation
 {
-    switch (_pageMode) {
+    switch (self.pageMode) {
         case JTCalendarPageModeCenterLeft:
         case JTCalendarPageModeCenter:
             return;
@@ -201,13 +198,13 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     [self updateMenuDates];
     
-    JTCalendarPageMode previousPageMode = _pageMode;
+    JTCalendarPageMode previousPageMode = self.pageMode;
     
     [self updatePageMode];
     
     CGSize size = [self calendarPageSize];
     
-    switch (_pageMode) {
+    switch (self.pageMode) {
         case JTCalendarPageModeFull: {
             NSInteger viewCount = 0;
             NSInteger numberOfPages = self.manager.showSecondMonth ? 4 : 3;
@@ -288,13 +285,13 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     [self updateMenuDates];
     
-    JTCalendarPageMode previousPageMode = _pageMode;
+    JTCalendarPageMode previousPageMode = self.pageMode;
     
     [self updatePageMode];
     
     CGSize size = [self calendarPageSize];
     
-    switch (_pageMode) {
+    switch (self.pageMode) {
         case JTCalendarPageModeFull: {
             NSInteger viewCount = 0;
             NSInteger numberOfPages = self.manager.showSecondMonth ? 4 : 3;
@@ -366,6 +363,10 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     NSAssert(date != nil, @"date cannot be nil");
     NSAssert(_manager != nil, @"manager cannot be nil");
     
+    if (self.manager.showSecondMonth && ![self.manager.delegateManager canDisplayPageWithDate:[self.manager.dateHelper addToDate:date months:1]]) {
+        date = [self.manager.dateHelper addToDate:date months:-1];
+    }
+    
     self->_date = date;
     
     if(!_leftView){
@@ -433,16 +434,16 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     BOOL haveRightPage = [_manager.delegateManager canDisplayPageWithDate:_rightView.date];
     
     if(haveLeftPage && haveRightPage){
-        _pageMode = JTCalendarPageModeFull;
+        self.pageMode = JTCalendarPageModeFull;
     }
     else if(!haveLeftPage && !haveRightPage){
-        _pageMode = JTCalendarPageModeCenter;
+        self.pageMode = JTCalendarPageModeCenter;
     }
     else if(!haveLeftPage){
-        _pageMode = JTCalendarPageModeCenterRight;
+        self.pageMode = JTCalendarPageModeCenterRight;
     }
     else{
-        _pageMode = JTCalendarPageModeCenterLeft;
+        self.pageMode = JTCalendarPageModeCenterLeft;
     }
     
     if(_manager.settings.pageViewHideWhenPossible){
@@ -460,7 +461,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     CGSize size = [self calendarPageSize];
     self.contentInset = UIEdgeInsetsZero;
     
-    switch (_pageMode) {
+    switch (self.pageMode) {
         case JTCalendarPageModeFull: {
             NSInteger numberOfPages = self.manager.showSecondMonth ? 4 : 3;
             self.contentSize = CGSizeMake(size.width * numberOfPages, size.height);
@@ -514,6 +515,56 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
                                            nextDate:_rightView.date
                                           reuseDate:_reuseView.date];
     }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    [self setContentOffsetForCalendarPaging];
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+    [self setContentOffsetForCalendarPaging];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    
+    if(_manager.delegate && [_manager.delegate respondsToSelector:@selector(calendarDidEndScrollingAnimation:)]){
+        [_manager.delegate calendarDidEndScrollingAnimation:scrollView];
+    }
+}
+
+- (void)setContentOffsetForCalendarPaging {
+    CGSize pageSize = [self calendarPageSize];
+    NSInteger pageChange = 0;
+    
+    switch (self.pageMode) {
+        case JTCalendarPageModeCenterRight:
+            if (self.contentOffset.x > pageSize.width * 0.5) {
+                pageChange = 1;
+            } else if (self.contentOffset.x < -pageSize.width * 0.5) {
+                pageChange = -1;
+            }
+            break;
+        case JTCalendarPageModeFull:
+            if (self.contentOffset.x > pageSize.width * 1.5) {
+                pageChange = 2;
+            } else if (self.contentOffset.x < pageSize.width * 0.5) {
+                pageChange = 0;
+            } else {
+                pageChange = 1;
+            }
+            break;
+        case JTCalendarPageModeCenterLeft:
+            if (self.contentOffset.x < pageSize.width * 0.5) {
+                pageChange = 0;
+            } else {
+                pageChange = 1;
+            }
+            break;
+        default:
+            break;
+    }
+    
+    [self setContentOffset:CGPointMake(pageChange * pageSize.width, 0) animated:YES];
 }
 
 @end

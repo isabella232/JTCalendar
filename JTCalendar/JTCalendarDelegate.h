@@ -67,6 +67,11 @@
 - (void)calendarDidLoadNextPage:(JTCalendarManager *)calendar;
 
 /*!
+ * Indicate that the scroll view did finish scrolling. Called when setContentOffset/scrollRectVisible:animated: of the scroll view finishes. not called if not animating
+ */
+- (void)calendarDidEndScrollingAnimation:(UIScrollView *)scrollView;
+
+/*!
  * Provide a view conforming to `JTCalendarPage` protocol, used as page for the contentView.
  * Return an instance of `JTCalendarPageView` by default.
  */
