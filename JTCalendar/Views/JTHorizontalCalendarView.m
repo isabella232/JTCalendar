@@ -263,9 +263,6 @@
 // should *just* be moving and updating the reuseView
 - (void)loadNextPage
 {
-    
-    // Must be set before chaging date for PageView for updating day views
-    self->_date = _rightView.date;
 
     // cycle all the views
     UIView<JTCalendarPage> *tmpView = _leftView; // left view is disappearing
@@ -277,6 +274,9 @@
     } else {
         _centerView = _rightView;
     }
+    
+    // Must be set before chaging date for PageView for updating day views
+    self->_date = _centerView.date;
     
     _rightView = _reuseView; // will be the *next* right view
     _reuseView = tmpView;
