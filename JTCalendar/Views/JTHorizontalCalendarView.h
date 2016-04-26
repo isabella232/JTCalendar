@@ -29,5 +29,6 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 - (void)commonInit;
 - (CGSize)calendarPageSize;
 - (BOOL)fullPageIsShowing;
+- (NSArray *)displayedPages;
 
 @end

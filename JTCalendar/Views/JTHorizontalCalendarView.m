@@ -568,4 +568,12 @@
     [self setContentOffset:CGPointMake(pageChange * pageSize.width, 0) animated:YES];
 }
 
+- (NSArray *)displayedPages {
+    if (self.manager.showSecondMonth) {
+        return @[_rightView, _centerView, _centerSecondMonthView, _leftView];
+    } else {
+        return @[_rightView, _centerView, _leftView];
+    }
+}
+
 @end
