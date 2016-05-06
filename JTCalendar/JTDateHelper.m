@@ -15,6 +15,23 @@
 
 @implementation JTDateHelper
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(timeZoneChanged:) name:NSSystemTimeZoneDidChangeNotification object:nil];
+    }
+    return self;
+}
+
+- (void)timeZoneChanged:(NSNotification *)notification {
+    _calendar = nil;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSSystemTimeZoneDidChangeNotification object:nil];
+}
+
 - (NSCalendar *)calendar
 {
     if(!_calendar){
