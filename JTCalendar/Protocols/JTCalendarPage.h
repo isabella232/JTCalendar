@@ -9,6 +9,15 @@
 
 @class JTCalendarManager;
 
+
+typedef NS_ENUM(NSInteger, JTCalendarPagePosition) {
+    JTCalendarPagePositionLeftOffscreen,
+    JTCalendarPagePositionLeftVisible,
+    JTCalendarPagePositionRightVisible, // iPad only
+    JTCalendarPagePositionRightOffscreen,
+    JTCalendarPagePositionReuse
+};
+
 @protocol JTCalendarPage <NSObject>
 
 - (void)setManager:(JTCalendarManager *)manager;
@@ -17,5 +26,6 @@
 - (void)setDate:(NSDate *)date;
 
 - (void)reload;
+- (void)updateForPagePosition:(JTCalendarPagePosition)pagePosition;
 
 @end

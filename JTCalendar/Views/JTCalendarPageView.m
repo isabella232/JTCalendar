@@ -11,10 +11,40 @@
 
 #define MAX_WEEKS_BY_MONTH 6
 
+@implementation UIView (WJUtilities)
+
+- (UIView *)addTrailingSeparatorOutsideView {
+    UIView *separatorView = [[UIView alloc] initWithFrame:CGRectZero];
+    separatorView.backgroundColor = [UIColor redColor];
+    separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:separatorView];
+    
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:separatorView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:separatorView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:1.0/[UIScreen mainScreen].scale]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[separatorView]|" options:0 metrics:nil views:@{@"separatorView":separatorView}]];
+    return separatorView;
+}
+
+- (UIView *)addLeadingSeparatorOutsideView {
+    UIView *separatorView = [[UIView alloc] initWithFrame:CGRectZero];
+    separatorView.backgroundColor = [UIColor redColor];
+    separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:separatorView];
+    
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:separatorView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0.0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:separatorView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:1.0/[UIScreen mainScreen].scale]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[separatorView]|" options:0 metrics:nil views:@{@"separatorView":separatorView}]];
+    return separatorView;
+}
+
+@end
+
 @interface JTCalendarPageView (){
     UIView<JTCalendarWeekDay> *_weekDayView;
     NSMutableArray *_weeksViews;
     NSUInteger _numberOfWeeksDisplayed;
+    UIView *_trailingSeparatorOutsideView;
+    UIView *_leadingSeparatorOutsideView;
 }
 
 @end
@@ -47,7 +77,8 @@
 
 - (void)commonInit
 {
-    // Maybe used in future
+    _trailingSeparatorOutsideView = [self addTrailingSeparatorOutsideView];
+    _leadingSeparatorOutsideView = [self addLeadingSeparatorOutsideView];
 }
 
 - (void)setDate:(NSDate *)date
@@ -117,6 +148,37 @@
         UIView<JTCalendarWeek> *weekView = _weeksViews[i];
         
         weekView.hidden = YES;
+    }
+}
+
+- (void)updateForPagePosition:(JTCalendarPagePosition)pagePosition {
+    
+    switch (pagePosition) {
+        case JTCalendarPagePositionLeftOffscreen: {
+            _trailingSeparatorOutsideView.hidden = YES;
+            _leadingSeparatorOutsideView.hidden = YES;
+            break;
+        }
+        case JTCalendarPagePositionLeftVisible: {
+            _trailingSeparatorOutsideView.hidden = NO;
+            _leadingSeparatorOutsideView.hidden = NO;
+            break;
+        }
+        case JTCalendarPagePositionRightVisible: { // iPad only
+            _trailingSeparatorOutsideView.hidden = NO;
+            _leadingSeparatorOutsideView.hidden = YES;
+            break;
+        }
+        case JTCalendarPagePositionRightOffscreen: {
+            _trailingSeparatorOutsideView.hidden = YES;
+            _leadingSeparatorOutsideView.hidden = YES;
+            break;
+        }
+        case JTCalendarPagePositionReuse: {
+            _trailingSeparatorOutsideView.hidden = YES;
+            _leadingSeparatorOutsideView.hidden = YES;
+            break;
+        }
     }
 }
 

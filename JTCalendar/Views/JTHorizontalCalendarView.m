@@ -60,6 +60,7 @@
 {
     [self resizeViewsIfWidthChanged];
     [self viewDidScroll];
+    [self updatePagesForPagePositions];
 }
 
 - (void)resizeViewsIfWidthChanged
@@ -252,6 +253,8 @@
         }
     }
     
+    [self updatePagesForPagePositions];
+    
     // Update the dayView that wasn't already correct
     [_leftView reload];
     
@@ -349,6 +352,8 @@
             break;
         }
     }
+    
+    [self updatePagesForPagePositions];
     
     // Update the dayView that wasn't already correct
     [_rightView reload];
@@ -515,6 +520,16 @@
                                            nextDate:_rightView.date
                                           reuseDate:_reuseView.date];
     }
+}
+
+- (void)updatePagesForPagePositions {
+    [_leftView updateForPagePosition:JTCalendarPagePositionLeftOffscreen];
+    [_centerView updateForPagePosition:JTCalendarPagePositionLeftVisible];
+    if (self.manager.showSecondMonth) {
+        [_centerSecondMonthView updateForPagePosition:JTCalendarPagePositionRightVisible];
+    }
+    [_rightView updateForPagePosition:JTCalendarPagePositionRightOffscreen];
+    [_reuseView updateForPagePosition:JTCalendarPagePositionReuse];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
