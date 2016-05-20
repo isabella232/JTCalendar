@@ -77,7 +77,7 @@
         _leftView.frame = CGRectMake(_leftView.frame.origin.x, 0, size.width, size.height);
         _centerView.frame = CGRectMake(_centerView.frame.origin.x, 0, size.width, size.height);
         _rightView.frame = CGRectMake(_rightView.frame.origin.x, 0, size.width, size.height);
-        _reuseView.frame = CGRectMake(_rightView.frame.origin.x, 0, size.width, size.height);
+        _reuseView.frame = CGRectMake(_reuseView.frame.origin.x, 0, size.width, size.height);
         
         if (self.manager.showSecondMonth) {
             _centerSecondMonthView.frame = CGRectMake(_centerSecondMonthView.frame.origin.x, 0, size.width, size.height);
