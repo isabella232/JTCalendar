@@ -21,7 +21,6 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     
     UIView *_leftView;
     UIView *_centerView;
-    UIView *_centerSecondMonthView;
     UIView *_rightView;
     UIView *_reuseView;
     
@@ -120,7 +119,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
         _reuseView.frame = CGRectMake(_reuseView.frame.origin.x, 0, _scrollView.frame.size.width, size.height);
         
         if (self.manager.showSecondMonth) {
-            _centerSecondMonthView.frame = CGRectMake(_centerView.frame.origin.x, 0, _scrollView.frame.size.width, size.height);
+            _secondMonthLabelView.frame = CGRectMake(_centerView.frame.origin.x, 0, _scrollView.frame.size.width, size.height);
         }
     }
 }
@@ -173,7 +172,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     _leftView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
     _centerView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
     if (self.manager.showSecondMonth) {
-        _centerSecondMonthView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
+        _secondMonthLabelView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
     }
     _rightView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
     _reuseView.frame = CGRectMake(size.width * viewCount++, 0, size.width, size.height);
@@ -205,8 +204,8 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
         [_scrollView addSubview:_centerView];
         
         if (self.manager.showSecondMonth) {
-            _centerSecondMonthView = [_manager.delegateManager buildMenuItemView];
-            [_scrollView addSubview:_centerSecondMonthView];
+            _secondMonthLabelView = [_manager.delegateManager buildMenuItemView];
+            [_scrollView addSubview:_secondMonthLabelView];
         }
         
         _rightView = [_manager.delegateManager buildMenuItemView];
@@ -222,7 +221,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     [_manager.delegateManager prepareMenuItemView:_reuseView date:reuseDate];
     
     if (self.manager.showSecondMonth) {
-        [_manager.delegateManager prepareMenuItemView:_centerSecondMonthView date:currentSecondMonthDate];
+        [_manager.delegateManager prepareMenuItemView:_secondMonthLabelView date:currentSecondMonthDate];
     }
     
     BOOL haveLeftPage = [_manager.delegateManager canDisplayPageWithDate:previousDate];

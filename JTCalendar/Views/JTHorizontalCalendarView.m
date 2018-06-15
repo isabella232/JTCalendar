@@ -14,7 +14,6 @@
     
     UIView<JTCalendarPage> *_leftView;
     UIView<JTCalendarPage> *_centerView;
-    UIView<JTCalendarPage> *_centerSecondMonthView; //for use with two month view
     UIView<JTCalendarPage> *_rightView;
     UIView<JTCalendarPage> *_reuseView;
 }
