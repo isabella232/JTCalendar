@@ -17,6 +17,13 @@
 
 @property (nonatomic, readonly) UIScrollView *scrollView;
 
+/**
+ Provides an external reference to the label container view that displays the
+ second month's name when the calendar is able to show two months side by side
+ (eg. on the iPad in landscape orientation)
+ */
+@property (nonatomic, readonly) UIView *secondMonthLabelView;
+
 /*!
  * Must be call if override the class
  */
