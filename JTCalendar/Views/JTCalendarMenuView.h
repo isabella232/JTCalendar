@@ -9,9 +9,11 @@
 
 #import "JTMenu.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface JTCalendarMenuView : UIView<JTMenu, UIScrollViewDelegate>
 
-@property (nonatomic, weak) JTCalendarManager *manager;
+@property (nonatomic, weak) JTCalendarManager * _Nullable manager;
 
 @property (nonatomic) CGFloat contentRatio;
 
@@ -22,7 +24,7 @@
  second month's name when the calendar is able to show two months side by side
  (eg. on the iPad in landscape orientation)
  */
-@property (nonatomic, readonly) UIView *secondMonthLabelView;
+@property (nonatomic, readonly) UIView * _Nullable secondMonthLabelView;
 
 /*!
  * Must be call if override the class
@@ -30,3 +32,5 @@
 - (void)commonInit;
 
 @end
+
+NS_ASSUME_NONNULL_END

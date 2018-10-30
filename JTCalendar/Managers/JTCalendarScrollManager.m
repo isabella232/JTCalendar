@@ -23,7 +23,7 @@
 
 - (void)setMenuPreviousDate:(NSDate *)previousDate
                 currentDate:(NSDate *)currentDate
-     currentSecondMonthDate:(NSDate *)currentSecondMonthDate
+     currentSecondMonthDate:(NSDate * _Nullable)currentSecondMonthDate
                    nextDate:(NSDate *)nextDate
                   reuseDate:(NSDate *)reuseDate
 {

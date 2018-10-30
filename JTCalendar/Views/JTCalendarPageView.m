@@ -79,6 +79,7 @@
 {
     _trailingSeparatorOutsideView = [self addTrailingSeparatorOutsideView];
     _leadingSeparatorOutsideView = [self addLeadingSeparatorOutsideView];
+    _date = [NSDate date]; // ensure date is never nil
 }
 
 - (void)setDate:(NSDate *)date

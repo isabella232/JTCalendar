@@ -17,9 +17,11 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     JTCalendarPageModeCenterRight
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface JTHorizontalCalendarView : UIScrollView<JTContent, UIScrollViewDelegate>
 
-@property (nonatomic, weak) JTCalendarManager *manager;
+@property (nonatomic, weak) JTCalendarManager * _Nullable manager;
 @property (assign, nonatomic) JTCalendarPageMode pageMode;
 
 @property (nonatomic) NSDate *date;
@@ -29,7 +31,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
  second month when the calendar is able to show two months side by side
  (eg. on the iPad in landscape orientation)
  */
-@property (nonatomic, readonly) UIView<JTCalendarPage> *centerSecondMonthView;
+@property (nonatomic, readonly) UIView<JTCalendarPage> * _Nullable centerSecondMonthView;
 
 /*!
  * Must be call if override the class
@@ -40,3 +42,5 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 - (NSArray *)displayedPages;
 
 @end
+
+NS_ASSUME_NONNULL_END

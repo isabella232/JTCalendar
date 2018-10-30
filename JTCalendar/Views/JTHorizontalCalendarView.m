@@ -507,7 +507,7 @@
 
 - (void)updateMenuDates
 {
-    if (self.manager.showSecondMonth) {
+    if (self.manager.showSecondMonth && _centerSecondMonthView.date) {
         [_manager.scrollManager setMenuPreviousDate:_leftView.date
                                         currentDate:_centerView.date
                              currentSecondMonthDate:_centerSecondMonthView.date
