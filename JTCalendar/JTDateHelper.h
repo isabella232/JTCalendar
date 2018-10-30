@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface JTDateHelper : NSObject
 
 - (NSCalendar *)calendar;
@@ -32,3 +34,5 @@
 - (BOOL)date:(NSDate *)date isEqualOrAfter:(NSDate *)startDate andEqualOrBefore:(NSDate *)endDate;
 
 @end
+
+NS_ASSUME_NONNULL_END

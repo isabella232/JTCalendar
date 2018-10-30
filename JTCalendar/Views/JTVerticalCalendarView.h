@@ -9,9 +9,11 @@
 
 #import "JTContent.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface JTVerticalCalendarView : UIScrollView<JTContent>
 
-@property (nonatomic, weak) JTCalendarManager *manager;
+@property (nonatomic, weak) JTCalendarManager * _Nullable manager;
 
 @property (nonatomic) NSDate *date;
 
@@ -21,3 +23,5 @@
 - (void)commonInit;
 
 @end
+
+NS_ASSUME_NONNULL_END

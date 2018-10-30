@@ -189,7 +189,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
 
 - (void)setPreviousDate:(NSDate *)previousDate
             currentDate:(NSDate *)currentDate
- currentSecondMonthDate:(NSDate *)currentSecondMonthDate
+ currentSecondMonthDate:(NSDate * _Nullable)currentSecondMonthDate
                nextDate:(NSDate *)nextDate
               reuseDate:(NSDate *)reuseDate
 {
@@ -220,7 +220,7 @@ typedef NS_ENUM(NSInteger, JTCalendarPageMode) {
     [_manager.delegateManager prepareMenuItemView:_rightView date:nextDate];
     [_manager.delegateManager prepareMenuItemView:_reuseView date:reuseDate];
     
-    if (self.manager.showSecondMonth) {
+    if (self.manager.showSecondMonth && _secondMonthLabelView && currentSecondMonthDate) {
         [_manager.delegateManager prepareMenuItemView:_secondMonthLabelView date:currentSecondMonthDate];
     }
     

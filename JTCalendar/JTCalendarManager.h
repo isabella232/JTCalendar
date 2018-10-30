@@ -18,12 +18,14 @@
 #import "JTCalendarDelegateManager.h"
 #import "JTCalendarScrollManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface JTCalendarManager : NSObject
 
-@property (nonatomic, weak) id<JTCalendarDelegate> delegate;
+@property (nonatomic, weak) id<JTCalendarDelegate> _Nullable delegate;
 
-@property (nonatomic, weak) UIView<JTMenu> *menuView;
-@property (nonatomic, weak) UIScrollView<JTContent> *contentView;
+@property (nonatomic, weak) UIView<JTMenu> * _Nullable menuView;
+@property (nonatomic, weak) UIScrollView<JTContent> * _Nullable contentView;
 @property (nonatomic, assign) BOOL showSecondMonth;
 
 @property (nonatomic, readonly) JTDateHelper *dateHelper;
@@ -41,5 +43,6 @@
 - (void)setDate:(NSDate *)date;
 - (void)reload;
 
-
 @end
+
+NS_ASSUME_NONNULL_END

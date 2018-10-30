@@ -9,6 +9,8 @@
 
 @class JTCalendarManager;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol JTCalendarDay <NSObject>
 
 - (void)setManager:(JTCalendarManager *)manager;
@@ -20,3 +22,5 @@
 - (void)setIsFromAnotherMonth:(BOOL)isFromAnotherMonth;
 
 @end
+
+NS_ASSUME_NONNULL_END

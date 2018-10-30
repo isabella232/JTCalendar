@@ -9,6 +9,8 @@
 
 @class JTCalendarManager;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol JTMenu <NSObject>
 
 - (void)setManager:(JTCalendarManager *)manager;
@@ -20,7 +22,7 @@
 
 - (void)setPreviousDate:(NSDate *)previousDate
             currentDate:(NSDate *)currentDate
-       currentSecondMonthDate:(NSDate *)currentSecondMonthDate
+ currentSecondMonthDate:(NSDate * _Nullable)currentSecondMonthDate
                nextDate:(NSDate *)nextDate
               reuseDate:(NSDate *)reuseDate;
 
@@ -29,3 +31,5 @@
 - (UIScrollView *)scrollView;
 
 @end
+
+NS_ASSUME_NONNULL_END

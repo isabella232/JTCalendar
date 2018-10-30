@@ -9,9 +9,11 @@
 
 #import "JTCalendarWeekDay.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface JTCalendarWeekDayView : UIView<JTCalendarWeekDay>
 
-@property (nonatomic, weak) JTCalendarManager *manager;
+@property (nonatomic, weak) JTCalendarManager * _Nullable manager;
 
 @property (nonatomic, readonly) NSArray *dayViews;
 
@@ -26,3 +28,5 @@
 - (void)reload;
 
 @end
+
+NS_ASSUME_NONNULL_END

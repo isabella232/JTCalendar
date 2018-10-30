@@ -9,7 +9,6 @@
 
 @class JTCalendarManager;
 
-
 typedef NS_ENUM(NSInteger, JTCalendarPagePosition) {
     JTCalendarPagePositionLeftOffscreen,
     JTCalendarPagePositionLeftVisible,
@@ -17,6 +16,8 @@ typedef NS_ENUM(NSInteger, JTCalendarPagePosition) {
     JTCalendarPagePositionRightOffscreen,
     JTCalendarPagePositionReuse
 };
+
+NS_ASSUME_NONNULL_BEGIN
 
 @protocol JTCalendarPage <NSObject>
 
@@ -29,3 +30,5 @@ typedef NS_ENUM(NSInteger, JTCalendarPagePosition) {
 - (void)updateForPagePosition:(JTCalendarPagePosition)pagePosition;
 
 @end
+
+NS_ASSUME_NONNULL_END
